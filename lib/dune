@@ -1,2 +1,3 @@
 (library
+  (libraries stdint)
   (name lib))

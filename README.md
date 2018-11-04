@@ -14,7 +14,7 @@ Ensuite il faut install les modules pratiques de compilation et pour le REPL:
 - utop
 
 ```sh
-opam install dune utop
+opam install dune utop stdint
 ```
 
 Commande pour lancer le REPL avec nos modules compilés:
@@ -32,3 +32,17 @@ use "lib/tas.ml"
 
 - `Lib` contient toutes les libraries
 - `Bin` sont nos fichiers main
+
+## Build & Run
+
+Pour compiler le projet
+
+```
+dune build bin/main.exe
+```
+
+Pour lancer l'executable avec un fichier de clé
+
+```
+dune exec bin/main.exe ./bin/tests/jeu_1_nb_cles_100.txt
+```

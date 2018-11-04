@@ -3,13 +3,15 @@
  **)
 
 
-type arbre
-(** Le type arbre d'un tas*)
+type t
+(** Le type t d'un tas*)
 
-val empty: arbre
+val empty: t
 
-val supprMin : arbre -> arbre
+val supprMin : t -> t
 (** Suppression du minimum dans un tas *)
 
-val ajout : int -> arbre -> arbre
+val ajout : Cle.t -> t -> t
 (** Ajout d'une valeur au tas *)
+
+val constIter : Cle.t list -> t
