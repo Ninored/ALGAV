@@ -21,7 +21,7 @@ module Cle128 : (Cle_type with type t = (Uint64.t * Uint64.t) option ) =
       match a, b with
       | Some (ha, la) , Some (hb, lb) ->
       ha < hb ||
-      ha == hb && la < lb
+      ha = hb && la < lb
       | _, _ -> false
 
     let eg a b =
