@@ -1,13 +1,5 @@
 open Type
 
-let time_fun f =
-  let t = Unix.gettimeofday () in
-  let res = f() in
-    Printf.printf "Time: %f"
-      (Unix.gettimeofday () -. t);
-  res
-
-
 module Loader (C : Cle_type) :
   (Loader_type with type c = C.t) =
   struct

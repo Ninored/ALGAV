@@ -7,7 +7,10 @@ module Tas_arbre (C: Cle_type) :
     (* Type d'une clé *)
     type c = C.t
 
-    (* Type d'un tas arbre *)
+    (* Type d'un tas arbre
+     * F -> Feuille
+     * N -> arbre gauche * clé * arbre droit * rang
+     *)
     type t =
       | F
       | N of t * C.t * t * int
@@ -34,7 +37,6 @@ module Tas_arbre (C: Cle_type) :
             else
               N (merged, k1, l, rank_l+1)
 
-
     (* Fonction de suppression du Minimum *)
     let supprMin = function
       | F -> failwith "Le tas est vide"
@@ -55,78 +57,88 @@ module Tas_arbre (C: Cle_type) :
         match b with
         | F -> ()
         | N(g, k, d, r) ->
+            aux g (depth+1);
             print_string ( string_of_int depth ^ " :(" ^ C.to_string k ^ "[" ^
             string_of_int r ^ "])\n");
-            aux g (depth+1);
             aux d (depth+1);
       in
       aux t 0
   end
 
-  (*
-
-  module Tas_tableau ( C: Cle_type ) : Tas_type =
+  module Tas_tableau ( C: Cle_type ):
+    (Tas_type with type c = C.t) =
     struct
 
+      (* Type d'une clé *)
       type c = C.t
 
       (* Type d'un tas tableau *)
       type t = {
-        t: int array;
+        mutable t: c array;
         mutable length: int
       }
 
       (* Fonction d'ajout d'une cle dans un tas *)
       let ajout k t =
+        let tas = if (t.length + 1) >= Array.length t.t then
+            let tmp = Array.make (t.length*2) C.none in
+            Array.blit t.t 0 tmp 0 t.length; tmp
+          else
+            t.t
+        in
         let rec calcul_place b i =
           let pere = (i-1)/2 in
-          if (k < (Array.get b pere)) && (i > 0) then
+          if ( C.inf k (Array.get b pere)) && (i > 0) then
             let _ = Array.set b i (Array.get b pere) in
             calcul_place b pere
           else
             i
         in
-        let pltce = calcul_place t.t t.length in
+        let place = calcul_place tas t.length in
         t.length <- (t.length +1);
-        Array.set t.t pltce k;
-        t
+        Array.set t.t place k;
+        { t = tas; length = t.length}
 
+      (* Creation d'un seule element*)
+      let singleton c = {t = Array.make 10 c ; length = 1}
 
       (* Fonction de suppression du minimum *)
-      let suppMin t =
+      let supprMin t =
         (* On positionne le dernière element en haut du tas *)
         Array.set t.t 0 (Array.get t.t (t.length - 1));
-        Array.set t.t (t.length-1) (-1);
+        Array.set t.t (t.length-1) C.none;
 
         (* On le fait descendre *)
-        let rec descendre v i =
+        let descendre v i =
           let gauche = (i*2) + 1 and droit = (i*2) + 2 in
-          if Array.get t.t gauche < Array.get t.t i then
+          if C.inf (Array.get t.t gauche) (Array.get t.t i) then
             let fils = Array.get t.t gauche in
             Array.set t.t gauche v;
             Array.set t.t i fils;
-          else if Array.get t.t droit < Array.get t.t i then
+          else
             let fils = Array.get t.t gauche in
             Array.set t.t droit v;
             Array.set t.t i fils;
         in
         descendre (Array.get t.t 0) 0;
-        t.length <- t.length - 1
+        t.length <- t.length - 1;
+        t
 
       (* Fonction d'union de deux tas *)
       let union a b =
-        let out = { t = Array.make (a.length + b.length+10) C.none; length = a.length } in
+        let out = { t = Array.make (a.length + b.length) C.none; length = a.length } in
         Array.blit a.t 0 out.t 0 a.length;
         Array.iter ( fun x -> let _ = ajout x out in () ) b.t;
         out
 
+      (* Fonction de création d'un tas à partir d'une liste *)
       let constIter lst =
-        let out = Array.make (List.length lst) C.none in
-        List.iter
-        (fun v -> let _ = ajout v {t = out; length = List.length lst} in ())
-        lst;
-        out
+        let tas = {t = (Array.make (List.length lst) C.none); length= 0} in
+        List.iter (fun v -> let _ = ajout v tas in ()) lst;
+        tas
 
+      (* Fonction d'affichage d'un tas *)
+      let print_tas t =
+        Array.iter (fun x -> print_string ( (C.to_string x) ^ ";\n")) t.t
 
   end
-  *)
