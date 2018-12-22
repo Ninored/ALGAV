@@ -22,7 +22,8 @@ failwith "Error no file specified"
   else
     printf "Opening %s: \n"  Sys.argv.(1);
     let filename = Sys.argv.(1) in
-    let filename2 = Sys.argv.(2) in
-
-    let _ = TesterArb.run filename (Some filename2) in ();
+    let filename2 =
+      if (Array.length Sys.argv) > 2 then Some Sys.argv.(2)
+      else None in
+    let _ = TesterArb.run filename filename2 in ();
     print_string "\n"
